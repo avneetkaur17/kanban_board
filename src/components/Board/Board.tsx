@@ -80,7 +80,7 @@ export function Board({ userId }: Props) {
             </div>
 
             {/* Columns */}
-            <div className="flex gap-4 overflow-x-auto pb-4">
+            <div className="flex flex-col sm:flex-row gap-4 overflow-x-auto pb-4">
                 {COLUMNS.map(column => (
                     <Column
                         key={column.id}

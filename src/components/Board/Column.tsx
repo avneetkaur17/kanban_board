@@ -30,7 +30,7 @@ export function Column({ column, tasks, onDeleteTask, onAddTask, onEditTask }: P
     })
 
     return (
-        <div className={`flex flex-col rounded-2xl p-3 min-w-65 w-67.5
+        <div className={`flex flex-col rounded-2xl p-3 w-full sm:min-w-65 sm:w-67.5
                         transition-colors duration-200
                         ${COLUMN_COLORS[column.id]}
                         ${isOver ? 'brightness-95' : ''}`}>
