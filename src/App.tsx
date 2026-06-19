@@ -1,5 +1,6 @@
 import { useAuth } from './hooks/useAuth'
 import { Board } from './components/Board/Board'
+import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
   const { user, loading } = useAuth()
@@ -15,6 +16,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8F7F4]">
       <Board userId={user!.id} />
+      <Analytics />
     </div>
   )
 }
