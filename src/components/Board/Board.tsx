@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useTasks } from '../../hooks/useTasks';
 import { Column } from './Column';
 import { TaskModal } from '../Task/TaskModal'
-import type { Column as ColumnType } from '../../types';
+import type { Column as ColumnType, Status } from '../../types';
 
 const COLUMNS: ColumnType[] = [
     { id: 'todo',       title: 'TO DO' },
@@ -16,8 +17,29 @@ interface Props {
 }
 
 export function Board({ userId }: Props) {
-    const { tasks, loading, error, createTask, deleteTask } = useTasks(userId)
+    const { tasks, loading, error, createTask, updateTaskStatus, deleteTask } = useTasks(userId)
     const [showModal, setShowModal] = useState(false)
+    const VALID_STATUSES: Status[] = ['todo', 'in_progress', 'in_review', 'done']
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: { distance: 5 },
+        })
+    )
+
+    function handleDragEnd(event: DragEndEvent) {
+        const { active, over } = event
+        if (!over) return
+
+        const taskId = active.id as string
+        const newStatus = over.id as Status
+
+        if (!VALID_STATUSES.includes(newStatus)) return
+        const task = tasks.find(t => t.id === taskId)
+        if (!task || task.status === newStatus) return
+
+        updateTaskStatus(taskId, newStatus)
+    }
 
     if(loading) {
         return (
@@ -36,6 +58,7 @@ export function Board({ userId }: Props) {
     }
 
     return (
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <div className="p-6 max-w-7xl mx-auto">
 
             {/* Header */}
@@ -76,5 +99,6 @@ export function Board({ userId }: Props) {
                 />
             )}
         </div>
+        </DndContext>
     )
 }

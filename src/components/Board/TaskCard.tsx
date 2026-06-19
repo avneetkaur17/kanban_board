@@ -1,5 +1,7 @@
 import { type Task } from '../../types'
 import { format, isAfter, addDays, startOfDay } from 'date-fns'
+import { useDraggable } from '@dnd-kit/core'
+import { CSS } from '@dnd-kit/utilities'
 
 interface Props {
     task: Task
@@ -19,9 +21,21 @@ export function TaskCard({ task, onDelete }: Props) {
     const dueDate = task.due_date ? startOfDay(new Date(task.due_date)) : null
     const isOverdue = dueDate ? isAfter(today, dueDate) : false
     const isDueSoon = dueDate && !isOverdue ? !isAfter(dueDate, twoDaysFromNow) :false
+    const { attributes, listeners, setNodeRef, transform, isDragging} = useDraggable({
+        id: task.id,
+    })
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        opacity: isDragging ? 0.5 : 1,
+    }
 
     return (
-        <div className="bg-white rounded-xl p-3 border-black/6
+        <div 
+        ref={setNodeRef}
+        style={style}
+        {...listeners}
+        {...attributes}
+        className="bg-white rounded-xl p-3 border-black/6
                         hover:border-black/12 transition-colors cursor-grab
                         active:cursor-grabbing group relative">
 
@@ -61,7 +75,10 @@ export function TaskCard({ task, onDelete }: Props) {
 
             {/* Delete button */}
             <button
-                onClick={() => onDelete(task.id)}
+                onClick={e => {
+                    e.stopPropagation()
+                    onDelete(task.id)
+                }}
                 className="absolute top-2.5 right-2.5 text-slate-300 hover:text-red-400
                             opacity-0 group-hover:opacity-100 transition-opacity text-xs" >
                 x

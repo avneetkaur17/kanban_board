@@ -1,5 +1,6 @@
 import { type Task, type Column as ColumnType } from '../../types'
 import { TaskCard } from './TaskCard'
+import { useDroppable } from '@dnd-kit/core'
 
 interface Props {
     column: ColumnType
@@ -23,9 +24,15 @@ const TITLE_COLORS: Record<string, string> = {
 }
 
 export function Column({ column, tasks, onDeleteTask, onAddTask }: Props) {
+    const { setNodeRef, isOver } = useDroppable({
+        id:column.id,
+    })
+
     return (
         <div className={`flex flex-col rounded-2xl p-3 min-w-65 w-67.5
-                        ${COLUMN_COLORS[column.id]}`}>
+                        transition-colors duration-200
+                        ${COLUMN_COLORS[column.id]}
+                        ${isOver ? 'brightness-95' : ''}`}>
 
             {/* Header */}  
             <div className="flex items-center justify-between mb-3 px-1">
@@ -49,7 +56,9 @@ export function Column({ column, tasks, onDeleteTask, onAddTask }: Props) {
             </div>
 
             {/*Cards */}
-            <div className="flex flex-col gap-2 flex-1">
+            <div 
+            ref={setNodeRef}
+            className="flex flex-col gap-2 flex-1 min-h-[100px">
                 {tasks.length === 0 ? (
                     <div className="flex-1 flex items-center justify-center py-8">
                         <p className="text-xs text-slate-400"> No tasks here</p>
