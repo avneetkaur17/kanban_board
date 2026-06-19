@@ -81,7 +81,7 @@ export function useTasks(userId: string | undefined) {
             setTasks(prev => prev.filter(task => task.id !== taskID))
 
             const { error } = await supabase
-                .from('task')
+                .from('tasks')
                 .delete()
                 .eq('id', taskID)
 

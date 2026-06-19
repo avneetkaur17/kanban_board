@@ -1,4 +1,5 @@
 import { useAuth } from './hooks/useAuth'
+import { Board } from './components/Board/Board'
 
 export default function App() {
   const { user, loading } = useAuth()
@@ -13,9 +14,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8F7F4]">
-      <p className="text-center pt-10 text-slate-600">
-        Board coming soon - logged in as {user!.id}
-      </p>
+      <Board userId={user!.id} />
     </div>
   )
 }
