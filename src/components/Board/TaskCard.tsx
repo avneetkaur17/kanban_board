@@ -6,6 +6,7 @@ import { CSS } from '@dnd-kit/utilities'
 interface Props {
     task: Task
     onDelete: (id: string) => void
+    onEdit: (task: Task) => void
 }
 
 const DOT_STYLES = {
@@ -14,11 +15,13 @@ const DOT_STYLES = {
     low:    'bg-slate-300',
 }
 
-export function TaskCard({ task, onDelete }: Props) {
+export function TaskCard({ task, onDelete, onEdit }: Props) {
     const today = startOfDay(new Date())
     const twoDaysFromNow = addDays(today, 2)
 
-    const dueDate = task.due_date ? startOfDay(new Date(task.due_date)) : null
+    const dueDate = task.due_date 
+        ? startOfDay(new Date(task.due_date + 'T12:00:00')) 
+        : null
     const isOverdue = dueDate ? isAfter(today, dueDate) : false
     const isDueSoon = dueDate && !isOverdue ? !isAfter(dueDate, twoDaysFromNow) :false
     const { attributes, listeners, setNodeRef, transform, isDragging} = useDraggable({
@@ -72,6 +75,17 @@ export function TaskCard({ task, onDelete }: Props) {
                     </span>
                 )}
             </div>
+
+            {/* Edit button */}
+            <button
+                onClick={e => {
+                    e.stopPropagation()
+                    onEdit(task)
+                }}
+                className="absolute top-2.5 right-8 text-slate-300 hover:text-indigo-400
+                            opacity-0 group-hover:opacity-100 transition-opacity text-xs">
+                ✎
+            </button>
 
             {/* Delete button */}
             <button

@@ -7,6 +7,7 @@ interface Props {
     tasks: Task[]
     onDeleteTask: (id: string) => void
     onAddTask: () => void
+    onEditTask: (task: Task) => void
 }
 
 const COLUMN_COLORS: Record<string, string> = {
@@ -23,7 +24,7 @@ const TITLE_COLORS: Record<string, string> = {
     done:       'text-green-700',
 }
 
-export function Column({ column, tasks, onDeleteTask, onAddTask }: Props) {
+export function Column({ column, tasks, onDeleteTask, onAddTask, onEditTask }: Props) {
     const { setNodeRef, isOver } = useDroppable({
         id:column.id,
     })
@@ -69,6 +70,7 @@ export function Column({ column, tasks, onDeleteTask, onAddTask }: Props) {
                             key={task.id}
                             task={task}
                             onDelete={onDeleteTask}
+                            onEdit={onEditTask}
                         />
                     ))
                 )}

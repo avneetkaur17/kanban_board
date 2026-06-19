@@ -1,25 +1,38 @@
 import { useState } from "react";
-import type { NewTask, Priority } from "../../types";
+import type { NewTask, Priority, Task } from "../../types";
 
 interface Props {
     onClose: () => void
-    onCreate: (task: NewTask) => void
+    onCreate?: (task: NewTask) => void
+    onUpdate?: (taskId: string, updates: Partial<NewTask>) => void
+    existingTask?: Task
 }
 
-export function TaskModal({ onClose, onCreate }: Props) {
-    const [title, setTitle] = useState(' ')
-    const [description, setDescription] = useState(' ')
+export function TaskModal({ onClose, onCreate, onUpdate, existingTask }: Props) {
+    const isEditing = !!existingTask
+
+    const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
     const [priority, setPriority] = useState<Priority>('normal')
-    const [dueDate, setDueDate] = useState(' ')
+    const [dueDate, setDueDate] = useState('')
 
     function handleSubmit() {
         if (!title.trim()) return
+
+        if (isEditing && onUpdate) {
+            onUpdate(existingTask.id, {
+                title: title.trim(),
+                description: description.trim() || null,
+                priority,
+                due_date: dueDate.trim() || null,
+            })
+        } else if (onCreate) {
         onCreate({
             title: title.trim(),
             description: description.trim() || null,
             priority,
             due_date: dueDate.trim() || null,
-        })
+        })}
         onClose()
     }
 
@@ -37,7 +50,10 @@ export function TaskModal({ onClose, onCreate }: Props) {
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-5">
-                    <h2 className="text-lg font-semibold text-slate-800">New Task</h2>
+                    <h2 className="text-lg font-semibold text-slate-800">
+                        {isEditing ? 'Edit Task' : 'New Task'}
+                    </h2>
+                    
                     <button
                         onClick={onClose}
                         className="text-slate-300 hover:text-slate-500 transition-colors text-xl">
@@ -118,7 +134,7 @@ export function TaskModal({ onClose, onCreate }: Props) {
                 <div className="flex justify-end gap-2">
                     <button
                         onClick={onClose}
-                        className="text-sm text-slate-500 border vorder-slate-200
+                        className="text-sm text-slate-500 border border-slate-200
                                     px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors">
                         Cancel
                     </button>
@@ -128,7 +144,7 @@ export function TaskModal({ onClose, onCreate }: Props) {
                         className="text-sm text-white bg-[#5B5BD6] px-4 py-2 rounded-xl
                                     hover:bg-indigo-700 transition-colors
                                     disabled:opacity-40 disabled:cursor-not-allowed">
-                        Create task
+                        {isEditing ? 'Save changes' : 'Create task'}
                     </button>
                 </div>
             </div>

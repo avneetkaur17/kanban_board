@@ -74,8 +74,26 @@ export function useTasks(userId: string | undefined) {
                 )
             }
         }
+        
+        //4. UPDATE TASK DETAILS
+        async function updateTask(taskId: string, updates: Partial<NewTask>) {
+            setTasks(prev =>
+                prev.map(task =>
+                    task.id === taskId ? { ...task, ...updates } : task
+                )
+            )
 
-        // 4. DELETE
+            const { error } = await supabase
+                .from('tasks')
+                .update(updates)
+                .eq('id', taskId)
+
+            if (error) {
+                setError(error.message)
+            }
+        } 
+
+        // 5. DELETE
         async function deleteTask(taskID: string) {
             // Optimistic update - remove from UI immediately
             setTasks(prev => prev.filter(task => task.id !== taskID))
@@ -90,5 +108,5 @@ export function useTasks(userId: string | undefined) {
                 }
         }
 
-        return { tasks, loading, error, createTask, updateTaskStatus, deleteTask}
+        return { tasks, loading, error, createTask, updateTask, updateTaskStatus, deleteTask}
 }

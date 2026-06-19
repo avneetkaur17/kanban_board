@@ -3,7 +3,7 @@ import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } f
 import { useTasks } from '../../hooks/useTasks';
 import { Column } from './Column';
 import { TaskModal } from '../Task/TaskModal'
-import type { Column as ColumnType, Status } from '../../types';
+import type { Column as ColumnType, Status, Task } from '../../types';
 
 const COLUMNS: ColumnType[] = [
     { id: 'todo',       title: 'TO DO' },
@@ -17,8 +17,9 @@ interface Props {
 }
 
 export function Board({ userId }: Props) {
-    const { tasks, loading, error, createTask, updateTaskStatus, deleteTask } = useTasks(userId)
+    const { tasks, loading, error, createTask, updateTask, updateTaskStatus, deleteTask } = useTasks(userId)
     const [showModal, setShowModal] = useState(false)
+    const [editingTask, setEditingTask] = useState<Task |null>(null)
     const VALID_STATUSES: Status[] = ['todo', 'in_progress', 'in_review', 'done']
 
     const sensors = useSensors(
@@ -87,6 +88,7 @@ export function Board({ userId }: Props) {
                         tasks={tasks.filter(t => t.status === column.id)}
                         onDeleteTask={deleteTask}
                         onAddTask={() => setShowModal(true)}
+                        onEditTask={setEditingTask}
                     />
                 ))}
             </div>
@@ -96,6 +98,14 @@ export function Board({ userId }: Props) {
                 <TaskModal
                     onClose={() => setShowModal(false)}
                     onCreate={createTask}
+                />
+            )}
+
+            {editingTask && (
+                <TaskModal
+                    onClose={() => setEditingTask(null)}
+                    onUpdate={updateTask}
+                    existingTask={editingTask}
                 />
             )}
         </div>
