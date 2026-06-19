@@ -18,7 +18,7 @@ export function TaskModal({ onClose, onCreate }: Props) {
             title: title.trim(),
             description: description.trim() || null,
             priority,
-            due_date: dueDate || null,
+            due_date: dueDate.trim() || null,
         })
         onClose()
     }
